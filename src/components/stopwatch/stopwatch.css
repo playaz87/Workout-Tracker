@@ -1,0 +1,25 @@
+.inline {
+    width: 100%;
+    padding: 8px;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+}
+
+.column {
+    width: 100%;
+    padding: 8px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.large-counter {
+    font-size: 3rem;
+    text-align: center;
+}
+
+.small-counter {
+    font-size: 1.8rem;
+    text-align: center;
+}
