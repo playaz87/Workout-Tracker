@@ -1,7 +1,7 @@
 import {useState} from 'react';
-import CardioCounter from './cardio-counter/CardioCounter';
+import CardioCounter from '../cardio-counter/CardioCounter';
 import {useSelector} from 'react-redux';
-import {WorkoutState} from '../state/reducers/workoutReducer';
+import {WorkoutState} from '../../state/reducers/workoutReducer';
 
 const CardioSegment = () => {
     const cardio = useSelector<WorkoutState, WorkoutState['cardio']>(state => state.cardio)

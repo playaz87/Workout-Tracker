@@ -4,7 +4,7 @@ import {walk, man} from 'ionicons/icons';
 import {useEffect, useState} from 'react';
 import {Cardio} from '../../services/database.service';
 import './CardioCounter.css';
-import {updateCardio, updateCardioDuration} from '../../state/actions/updateWorkout';
+import {updateCardio} from '../../state/actions/updateWorkout';
 import {useDispatch} from 'react-redux';
 
 
@@ -12,15 +12,24 @@ const CardioCounter: React.FC<CardioProps> = ({cardio, color, index}) => {
     const dispatch = useDispatch();
 
 
-    const calculateDistance = () => {
-        const metres = cardio.speed * 1000;
-        const metresPerSecond = metres / (60 * 60);
-        return cardio.duration * metresPerSecond;
-    };
 
-    useEffect(() => {
-        updateCardio({...cardio, distance: calculateDistance()}, index);
-    }, [cardio.duration]);
+
+    // useEffect(() => {
+    //     dispatch(
+    //         updateCardio(
+    //             {...cardio, distance: calculateDistance()}, index
+    //         )
+    //     );
+    // }, [cardio.duration]);
+
+    const handleSpeedChange = (val: number) => {
+        const data = {...cardio, speed: val};
+        dispatch(
+            updateCardio(
+                data, index
+            )
+        )
+    };
 
     return (
         <>
@@ -29,8 +38,9 @@ const CardioCounter: React.FC<CardioProps> = ({cardio, color, index}) => {
                 <IonCardContent>
                     <IonIcon icon={cardio.type === 'Walk' ? man : walk}/>
                     <Stopwatch
-                        onUpdate={updateCardioDuration}
+                        onUpdateCardio={updateCardio}
                         index={index}
+                        cardio={cardio}
                         color={color} isSmall={true}/>
                     <IonRange
                         min={cardio.type === 'Walk' ? 1 : 7}
@@ -40,7 +50,7 @@ const CardioCounter: React.FC<CardioProps> = ({cardio, color, index}) => {
                         pin={true}
                         pinFormatter={val => val}
                         color={color}
-                        onIonChange={e => updateCardio({...cardio, speed: e.detail.value as number}, index)}
+                        onIonChange={e => handleSpeedChange(e.detail.value as number)}
                     />
                     <div className="footer">
                         <IonText>{cardio.speed} Km/hr</IonText>

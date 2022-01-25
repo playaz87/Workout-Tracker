@@ -1,6 +1,6 @@
 import {ActionWorkout} from '../actions/updateWorkout';
 import {Cardio, Weights} from '../../services/database.service';
-import {getTodaysDate} from '../../services/utils.service';
+import {calculateDistance, getTodaysDate} from '../../services/utils.service';
 
 export interface WorkoutState {
     duration: number;
@@ -24,21 +24,36 @@ export const workoutReducer = (state: WorkoutState = initialState, action: Actio
             return {...state, duration: action.payload};
 
         case 'CREATE_CARDIO': {
-            const cardio: Cardio[] = [...state.cardio, action.payload];
-            return {...state, cardio};
+            const cardios: Cardio[] = [...state.cardio, action.payload];
+            return {...state, cardio: cardios};
         }
 
-        case 'UPDATE_CARDIO_DURATION': {
-            const cardio = [...state.cardio];
-            cardio[action.payload.index].duration = action.payload.value
-            return {...state, cardio};
-        }
+        // case 'UPDATE_CARDIO_DURATION': {
+        //     const cardios = [...state.cardio];
+        //     cardios[action.payload.index].duration = action.payload.value
+        //     return {...state, cardio: cardios};
+        // }
 
         case 'UPDATE_CARDIO': {
-            const cardio = [...state.cardio];
-            cardio[action.index] = action.payload;
-            return {...state, cardio};
+            const cardios = [...state.cardio];
+            cardios[action.index] = action.payload;
+            cardios[action.index].distance = calculateDistance(cardios[action.index]);
+            return {...state, cardio: cardios};
         }
+
+        case 'CREATE_WEIGHT_WORKOUT': {
+            const weights = [...state.weights];
+            weights.push(action.payload);
+            return {...state, weights};
+        }
+
+        case 'UPDATE_WEIGHTS_WORKOUT': {
+            const weights = [...state.weights];
+            weights[action.index] = action.payload;
+            return {...state, weights};
+        }
+
+
 
         default:
             return state;

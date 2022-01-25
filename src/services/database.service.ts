@@ -1,6 +1,6 @@
 import {Storage} from '@capacitor/storage';
 import {barbell, bicycle, body} from 'ionicons/icons';
-import benchpress  from '../assets/custom-icons/benchpress.svg';
+import benchpress from '../assets/custom-icons/benchpress.svg';
 import latpulldown from '../assets/custom-icons/latpulldown.svg';
 
 export interface Cardio {
@@ -39,7 +39,7 @@ export const saveWorkout = (workout: Workout) => {
 }
 
 export const loadWorkout = async (date: string): Promise<Workout> => {
-    const res =  await Storage.get({key: `workout_${date}`});
+    const res = await Storage.get({key: `workout_${date}`});
     return await new Promise((resolve, reject) => {
         if (res.value) {
             resolve(JSON.parse(res.value));
@@ -49,16 +49,24 @@ export const loadWorkout = async (date: string): Promise<Workout> => {
 
 }
 
-export const loadAllWorkouts = async () => {
+export const loadAllWorkouts = async (): Promise<Workout[]> => {
     const workouts: Workout[] = [];
-    const res = await Storage.keys();
-    res.keys.forEach(async value => {
-        if (value.includes('workout')) {
-            const res2 = await Storage.get({key: value});
-            if (typeof res2.value === 'string') {
-                const workout = JSON.parse(res2.value);
-                workouts.push(workout);
+    return new Promise(async resolve => {
+        const keys = await Storage.keys();
+        keys.keys.forEach((value, index) => {
+            if (value.includes('workout')) {
+                Storage.get({key: value})
+                    .then(res => {
+                        if (typeof res.value === 'string') {
+                            const workout = JSON.parse(res.value);
+                            workouts.push(workout);
+                        }
+                        if (index === keys.keys.length - 1) {
+                            resolve(workouts);
+                        }
+                    })
             }
-        }
+        });
     });
+
 }

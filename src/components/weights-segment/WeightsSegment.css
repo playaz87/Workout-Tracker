@@ -1,0 +1,26 @@
+.flex-row {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    width: 100%;
+    padding: 8px;
+    align-items: center;
+}
+
+.width-40 {
+    width: 40%;
+}
+
+.flex-around {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+}
+
+.padding-8 {
+    padding: 8px;
+}
+
+.icon {
+    font-size: 2rem;
+}
