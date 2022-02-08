@@ -1,32 +1,21 @@
 import Stopwatch from '../stopwatch/stopwatch';
 import {IonCard, IonCardContent, IonCardHeader, IonIcon, IonRange, IonText} from '@ionic/react';
 import {walk, man} from 'ionicons/icons';
-import {useEffect, useState} from 'react';
 import {Cardio} from '../../services/database.service';
 import './CardioCounter.css';
-import {updateCardio} from '../../state/actions/updateWorkout';
-import {useDispatch} from 'react-redux';
+import {useAppDispatch, useAppSelector} from '../../state/hooks';
+import {updateCardio} from '../../state/workoutSlice';
 
 
 const CardioCounter: React.FC<CardioProps> = ({cardio, color, index}) => {
-    const dispatch = useDispatch();
-
-
-
-
-    // useEffect(() => {
-    //     dispatch(
-    //         updateCardio(
-    //             {...cardio, distance: calculateDistance()}, index
-    //         )
-    //     );
-    // }, [cardio.duration]);
+    const dispatch = useAppDispatch();
+    const state = useAppSelector(state1 => state1.workout);
 
     const handleSpeedChange = (val: number) => {
         const data = {...cardio, speed: val};
         dispatch(
             updateCardio(
-                data, index
+                [data, index]
             )
         )
     };
@@ -41,7 +30,9 @@ const CardioCounter: React.FC<CardioProps> = ({cardio, color, index}) => {
                         onUpdateCardio={updateCardio}
                         index={index}
                         cardio={cardio}
-                        color={color} isSmall={true}/>
+                        color={color} isSmall={true}
+                        initVal={state.cardio[cardio.type === 'Walk' ? 0 : 1].duration}
+                    />
                     <IonRange
                         min={cardio.type === 'Walk' ? 1 : 7}
                         max={cardio.type === 'Walk' ? 8 : 15}

@@ -3,23 +3,24 @@ import {Weights} from '../../../services/database.service';
 import {IonCard, IonCardContent, IonIcon, IonItem, IonLabel, IonSelect, IonSelectOption, IonText} from '@ionic/react';
 import {barbell, man, walk} from 'ionicons/icons';
 import './WeightCounter.css';
-import {useDispatch} from 'react-redux';
-import {updateWeightsWorkout} from '../../../state/actions/updateWorkout';
+import {useAppDispatch} from '../../../state/hooks';
+import {updateWeight} from '../../../state/workoutSlice';
+
 
 const WeightCounter: React.FC<WeightCounterProps> = ({weight, index}) => {
-    const dispatch = useDispatch();
+    const dispatch = useAppDispatch();
 
     const handleSetsChange = (val: number) => {
         dispatch(
-            updateWeightsWorkout(
-                {...weight, sets: val}, index
+            updateWeight(
+                [{...weight, sets: val}, index]
             )
         )
     };
     const handleRepsChange = (val: number) => {
         dispatch(
-            updateWeightsWorkout(
-                {...weight, reps: val}, index
+            updateWeight(
+                [{...weight, reps: val}, index]
             )
         )
     };

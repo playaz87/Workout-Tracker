@@ -16,10 +16,10 @@ import {Weights, WeightWorkouts, Workout} from '../../services/database.service'
 import {animateRequired} from '../../services/utils.service';
 import './WeightsSegment.css';
 import '../../../node_modules/animate.css/animate.css';
-import {createWeightsWorkout} from '../../state/actions/updateWorkout';
-import {useDispatch, useSelector} from 'react-redux';
+import {useAppDispatch, useAppSelector} from '../../state/hooks';
+import {createWeight} from '../../state/workoutSlice';
 import WeightCounter from './weight-counter/WeightCounter';
-import {WorkoutState} from '../../state/reducers/workoutReducer';
+
 
 const defaultWeightsWorkout: Weights = {
     reps: 0,
@@ -31,14 +31,14 @@ const defaultWeightsWorkout: Weights = {
 
 const WeightsSegment = () => {
     const [nextWeightsWorkout, setNextWeightsWorkout] = useState<Weights>(defaultWeightsWorkout);
-    const dispatch = useDispatch();
-    const weights = useSelector<WorkoutState, WorkoutState['weights']>(state => state.weights);
+    const dispatch = useAppDispatch();
+    const weights = useAppSelector(state => state.workout.weights);
     const addWeightsWorkout = () => {
         if (nextWeightsWorkout.weight <= 0) {
             animateRequired('weight-input');
         } else {
             dispatch(
-                createWeightsWorkout(
+                createWeight(
                     {...nextWeightsWorkout}
                 )
             );

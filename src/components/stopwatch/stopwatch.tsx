@@ -1,15 +1,14 @@
 import React, {useEffect, useRef, useState} from 'react';
 import {IonButton, IonText} from '@ionic/react';
 import './stopwatch.css';
-import {useDispatch} from 'react-redux';
-import {
-    ActionWorkout, UpdateCardioData
-} from '../../state/actions/updateWorkout';
-import {Cardio} from '../../services/database.service';
 
-const Stopwatch: React.FC<StopwatchProps> = ({onUpdateWorkout, onUpdateCardio,  color, isSmall, index, cardio, onStop}) => {
-    const dispatch = useDispatch();
-    const [timer, setTimer] = useState(0);
+import {Cardio} from '../../services/database.service';
+import {useAppDispatch, useAppSelector} from '../../state/hooks';
+import {PayloadAction} from '@reduxjs/toolkit';
+
+const Stopwatch: React.FC<StopwatchProps> = ({onUpdateWorkout, onUpdateCardio,  color, isSmall, index, cardio, onStop, initVal}) => {
+    const dispatch = useAppDispatch();
+    const [timer, setTimer] = useState(initVal);
     const [isActive, setIsActive] = useState(false);
     const [isPaused, setIsPaused] = useState(false);
     const countRef = useRef<any>(null);
@@ -21,7 +20,7 @@ const Stopwatch: React.FC<StopwatchProps> = ({onUpdateWorkout, onUpdateCardio,  
             const data = {...cardio};
             data.duration = timer;
             dispatch(
-                onUpdateCardio(data, index)
+                onUpdateCardio([data, index])
             );
         }
     }, [timer])
@@ -91,11 +90,12 @@ export default Stopwatch;
 
 
 export interface StopwatchProps {
-    onUpdateWorkout?(val: number): ActionWorkout;
-    onUpdateCardio?(cardio: Cardio, index: number): ActionWorkout;
+    onUpdateWorkout?(val: number): PayloadAction<number>;
+    onUpdateCardio?(data: [Cardio, number]): PayloadAction<[Cardio, number]>
     onStop?(): void;
     color: string;
     isSmall: boolean;
     index?: number;
-    cardio?: Cardio
+    cardio?: Cardio;
+    initVal: number;
 }

@@ -2,6 +2,7 @@ import {Storage} from '@capacitor/storage';
 import {barbell, bicycle, body} from 'ionicons/icons';
 import benchpress from '../assets/custom-icons/benchpress.svg';
 import latpulldown from '../assets/custom-icons/latpulldown.svg';
+import {useAppDispatch} from '../state/hooks';
 
 export interface Cardio {
     id: number;
@@ -22,6 +23,7 @@ export interface Weights {
 export interface Workout {
     date: string;
     duration: number;
+    bodyWeight: number;
     weights: Weights[];
     cardio: Cardio[];
 }
@@ -68,5 +70,12 @@ export const loadAllWorkouts = async (): Promise<Workout[]> => {
             }
         });
     });
-
 }
+
+export const deleteWorkout = (date: string): Promise<void> => {
+    return new Promise((resolve, reject) => {
+        Storage.remove({key: `workout_${date}`})
+            .then(() => resolve())
+            .catch(() => reject);
+    });
+};

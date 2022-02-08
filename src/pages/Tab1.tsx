@@ -1,10 +1,11 @@
 import {
+    IonCard,
     IonContent,
     IonHeader,
     IonIcon, IonLabel,
-    IonPage,
+    IonPage, IonRange,
     IonSegment,
-    IonSegmentButton,
+    IonSegmentButton, IonSlide,
     IonTitle,
     IonToolbar
 } from '@ionic/react';
@@ -13,19 +14,40 @@ import Stopwatch from '../components/stopwatch/stopwatch';
 import {barbell, footsteps} from 'ionicons/icons';
 import {useEffect, useState} from 'react';
 import CardioSegment from '../components/cardio-segment/CardioSegment';
-import {createCardio, createWorkout, updateWorkoutDuration} from '../state/actions/updateWorkout';
-import {useDispatch, useSelector} from 'react-redux';
+
 import WeightsSegment from '../components/weights-segment/WeightsSegment';
-import {WorkoutState} from '../state/reducers/workoutReducer';
-import {saveWorkout} from '../services/database.service';
+import {loadWorkout, saveWorkout} from '../services/database.service';
+import {useAppDispatch, useAppSelector} from '../state/hooks';
+import {
+    create,
+    createCardio,
+    restoreWorkout,
+    updateBodyWeight,
+    updateDuration,
+} from '../state/workoutSlice';
+import {getTodaysDate} from '../services/utils.service';
 
 const Tab1: React.FC = () => {
-    const dispatch = useDispatch();
-    const state = useSelector<WorkoutState, WorkoutState>(state => state);
+    const dispatch = useAppDispatch();
+    const state = useAppSelector(state1 => state1.workout);
+    const [isLoading, setIsLoading] = useState(true);
+    const weightMin = state.bodyWeight - 2;
+    const weightMax = state.bodyWeight + 2;
+
+
     useEffect(() => {
-        dispatch(createWorkout());
-        dispatch(createCardio({id: 0, duration: 0, speed: 0, distance: 0, type: 'Walk'}))
-        dispatch(createCardio({id: 1, duration: 0, speed: 0, distance: 0, type: 'Run'}))
+
+        loadWorkout(getTodaysDate())
+            .then(res => {
+                dispatch(restoreWorkout(res));
+                setIsLoading(false);
+            })
+            .catch(() => {
+                dispatch(create());
+                dispatch(createCardio({id: 0, duration: 0, speed: 0, distance: 0, type: 'Walk'}));
+                dispatch(createCardio({id: 1, duration: 0, speed: 0, distance: 0, type: 'Run'}));
+                setIsLoading(false);
+            });
     }, []);
 
     const [segment, setSegment] = useState('Cardio');
@@ -36,23 +58,35 @@ const Tab1: React.FC = () => {
 
     return (
         <IonPage>
-            {/*<IonHeader>*/}
-            {/*    <IonToolbar>*/}
-            {/*        <IonTitle>Tab 1</IonTitle>*/}
-            {/*    </IonToolbar>*/}
-            {/*</IonHeader>*/}
             <IonContent fullscreen>
-                <IonHeader collapse="condense">
-                    <IonToolbar>
-                        <IonTitle size="large">Tab 1</IonTitle>
-                    </IonToolbar>
-                </IonHeader>
-                <Stopwatch
-                    onUpdateWorkout={updateWorkoutDuration}
-                    onStop={finishWorkout}
-                    color="primary"
-                    isSmall={false}
-                />
+                {!isLoading &&
+                    <IonCard>
+                        <Stopwatch
+                            onUpdateWorkout={updateDuration}
+                            onStop={finishWorkout}
+                            color="primary"
+                            isSmall={false}
+                            initVal={state.duration}
+                        />
+                        <IonLabel class="body-weight">Body weight ({state.bodyWeight})</IonLabel>
+                        <IonRange
+                            min={70}
+                            max={74}
+                            value={state.bodyWeight}
+                            step={0.1}
+                            snaps={true}
+                            color="primary"
+                            onIonChange={e => {
+                                const val = Math.floor(e.detail.value as number * 10) / 10;
+                                dispatch(
+                                    updateBodyWeight(val)
+                                );
+                            }}
+                        />
+                    </IonCard>
+                }
+
+
                 <div className="ion-padding">
                     <IonSegment onIonChange={e => setSegment(e.detail.value as string)} value={segment}>
                         <IonSegmentButton value="Cardio">
@@ -69,7 +103,7 @@ const Tab1: React.FC = () => {
                     <CardioSegment/>
                 }
                 {segment === 'Weights' &&
-                    <WeightsSegment />
+                    <WeightsSegment/>
                 }
             </IonContent>
         </IonPage>

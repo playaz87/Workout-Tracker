@@ -1,10 +1,9 @@
-import {useState} from 'react';
 import CardioCounter from '../cardio-counter/CardioCounter';
-import {useSelector} from 'react-redux';
-import {WorkoutState} from '../../state/reducers/workoutReducer';
+
+import {useAppSelector} from '../../state/hooks';
 
 const CardioSegment = () => {
-    const cardio = useSelector<WorkoutState, WorkoutState['cardio']>(state => state.cardio)
+    const cardio = useAppSelector(state => state.workout.cardio);
     return (
         <>
             {
